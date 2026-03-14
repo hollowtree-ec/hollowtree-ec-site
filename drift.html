@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drift — Sleep better. Wake easier.</title>
+    <meta name="description" content="Drift is the only app that owns your entire night. Layer sleep sounds, wake with missions that prove you're awake, and start every morning informed.">
+    <meta name="keywords" content="sleep app, alarm app, sleep sounds, brown noise, white noise, alarm missions, morning routine, sleep tracker">
+    <meta property="og:title" content="Drift — Sleep better. Wake easier.">
+    <meta property="og:description" content="Layer sleep sounds. Wake with missions. Start every morning informed.">
+    <meta property="og:type" content="website">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,700;1,9..144,300&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-deep: #06060F;
+            --bg-mid: #0B1026;
+            --bg-card: rgba(255,255,255,0.04);
+            --bg-card-hover: rgba(255,255,255,0.07);
+            --accent: #6C63FF;
+            --accent-glow: rgba(108,99,255,0.25);
+            --morning: #FF6B35;
+            --morning-soft: #FFB088;
+            --gold: #FFD700;
+            --text-primary: #F0ECF8;
+            --text-secondary: #8B85A0;
+            --text-dim: #555;
+            --sage: #7DA68A;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg-deep);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ===== STARFIELD ===== */
+        .starfield {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .star {
+            position: absolute;
+            border-radius: 50%;
+            background: white;
+            animation: twinkle var(--dur) ease-in-out infinite alternate;
+        }
+
+        @keyframes twinkle {
+            0% { opacity: var(--min-o); }
+            100% { opacity: var(--max-o); }
+        }
+
+        /* ===== GRADIENT ORB ===== */
+        .orb {
+            position: fixed;
+            width: 600px; height: 600px;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.12;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .orb-1 { background: var(--accent); top: -200px; right: -100px; }
+        .orb-2 { background: #2D1B4E; bottom: -200px; left: -200px; }
+        .orb-3 { background: var(--morning); top: 50%; left: 50%; transform: translate(-50%, -50%); opacity: 0.04; width: 800px; height: 800px; }
+
+        /* ===== LAYOUT ===== */
+        .content { position: relative; z-index: 1; }
+
+        section {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* ===== NAV ===== */
+        nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 100;
+            padding: 20px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(20px);
+            background: rgba(6,6,15,0.7);
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+        }
+
+        .nav-logo {
+            font-family: 'Fraunces', serif;
+            font-size: 22px;
+            font-weight: 500;
+            letter-spacing: -0.5px;
+            color: var(--text-primary);
+            text-decoration: none;
+        }
+
+        .nav-links { display: flex; gap: 32px; align-items: center; }
+        .nav-links a {
+            font-size: 13px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            letter-spacing: 0.3px;
+            transition: color 0.3s;
+        }
+        .nav-links a:hover { color: var(--text-primary); }
+
+        .nav-cta {
+            background: var(--accent) !important;
+            color: white !important;
+            padding: 8px 20px;
+            border-radius: 10px;
+            font-weight: 500;
+            transition: transform 0.2s, box-shadow 0.3s !important;
+        }
+        .nav-cta:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 20px var(--accent-glow);
+        }
+
+        /* ===== HERO ===== */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding-top: 100px;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--bg-card);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 100px;
+            padding: 6px 16px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            letter-spacing: 0.5px;
+            margin-bottom: 32px;
+            animation: fadeUp 0.8s ease-out both;
+        }
+
+        .hero-badge .dot {
+            width: 6px; height: 6px;
+            background: var(--sage);
+            border-radius: 50%;
+            animation: pulse-dot 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .hero h1 {
+            font-family: 'Fraunces', serif;
+            font-size: clamp(42px, 7vw, 80px);
+            font-weight: 300;
+            line-height: 1.08;
+            letter-spacing: -2px;
+            margin-bottom: 24px;
+            animation: fadeUp 0.8s ease-out 0.1s both;
+        }
+
+        .hero h1 em {
+            font-style: italic;
+            font-weight: 300;
+            color: var(--accent);
+        }
+
+        .hero-sub {
+            font-size: clamp(16px, 2vw, 19px);
+            color: var(--text-secondary);
+            max-width: 520px;
+            line-height: 1.7;
+            font-weight: 300;
+            margin-bottom: 48px;
+            animation: fadeUp 0.8s ease-out 0.2s both;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 16px;
+            animation: fadeUp 0.8s ease-out 0.3s both;
+        }
+
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(135deg, var(--accent), #8B7FFF);
+            color: white;
+            padding: 14px 32px;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: transform 0.2s, box-shadow 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px var(--accent-glow);
+        }
+
+        .btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--bg-card);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: var(--text-primary);
+            padding: 14px 32px;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 400;
+            text-decoration: none;
+            transition: background 0.3s, border-color 0.3s;
+            cursor: pointer;
+        }
+        .btn-secondary:hover {
+            background: var(--bg-card-hover);
+            border-color: rgba(255,255,255,0.15);
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(24px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== FLOW SECTION ===== */
+        .flow {
+            padding: 120px 24px;
+        }
+
+        .section-label {
+            font-size: 11px;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .section-title {
+            font-family: 'Fraunces', serif;
+            font-size: clamp(28px, 4vw, 44px);
+            font-weight: 300;
+            letter-spacing: -1px;
+            text-align: center;
+            margin-bottom: 64px;
+            line-height: 1.2;
+        }
+
+        .flow-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .flow-card {
+            background: var(--bg-card);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 20px;
+            padding: 32px 28px;
+            transition: background 0.3s, border-color 0.3s, transform 0.3s;
+        }
+
+        .flow-card:hover {
+            background: var(--bg-card-hover);
+            border-color: rgba(255,255,255,0.1);
+            transform: translateY(-4px);
+        }
+
+        .flow-icon {
+            width: 48px; height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            margin-bottom: 20px;
+        }
+
+        .flow-card h3 {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 10px;
+            letter-spacing: -0.3px;
+        }
+
+        .flow-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.65;
+            font-weight: 300;
+        }
+
+        /* ===== FEATURES SECTION ===== */
+        .features { padding: 80px 24px 120px; }
+
+        .feature-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 64px;
+            align-items: center;
+            margin-bottom: 100px;
+        }
+
+        .feature-row:nth-child(even) { direction: rtl; }
+        .feature-row:nth-child(even) > * { direction: ltr; }
+
+        .feature-visual {
+            background: linear-gradient(135deg, rgba(108,99,255,0.08), rgba(45,27,78,0.15));
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 24px;
+            aspect-ratio: 4/3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 64px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-visual::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 30% 40%, rgba(108,99,255,0.1), transparent 60%);
+        }
+
+        .feature-text .section-label { text-align: left; }
+
+        .feature-text h3 {
+            font-family: 'Fraunces', serif;
+            font-size: 32px;
+            font-weight: 300;
+            letter-spacing: -0.8px;
+            margin-bottom: 16px;
+            line-height: 1.2;
+        }
+
+        .feature-text p {
+            font-size: 15px;
+            color: var(--text-secondary);
+            line-height: 1.75;
+            font-weight: 300;
+        }
+
+        .feature-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .feature-tag {
+            font-size: 11px;
+            padding: 5px 12px;
+            border-radius: 8px;
+            background: rgba(108,99,255,0.1);
+            color: var(--accent);
+            border: 1px solid rgba(108,99,255,0.15);
+            letter-spacing: 0.3px;
+        }
+
+        /* ===== PRICING ===== */
+        .pricing { padding: 80px 24px 120px; }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .price-card {
+            background: var(--bg-card);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 20px;
+            padding: 32px 28px;
+            text-align: center;
+            transition: transform 0.3s, border-color 0.3s;
+            position: relative;
+        }
+
+        .price-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .price-card.featured {
+            border-color: var(--gold);
+            background: rgba(255,215,0,0.03);
+        }
+
+        .price-card.featured::before {
+            content: 'BEST VALUE';
+            position: absolute;
+            top: -11px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, var(--gold), #FFA500);
+            color: #1a1a1a;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            padding: 3px 14px;
+            border-radius: 6px;
+        }
+
+        .price-tier {
+            font-size: 13px;
+            color: var(--text-secondary);
+            letter-spacing: 0.5px;
+            margin-bottom: 16px;
+        }
+
+        .price-amount {
+            font-family: 'Fraunces', serif;
+            font-size: 40px;
+            font-weight: 500;
+            letter-spacing: -1px;
+        }
+
+        .price-period {
+            font-size: 14px;
+            color: var(--text-dim);
+            margin-bottom: 24px;
+        }
+
+        .price-note {
+            font-size: 12px;
+            color: var(--sage);
+            margin-top: -16px;
+            margin-bottom: 24px;
+        }
+
+        .price-features {
+            list-style: none;
+            text-align: left;
+        }
+
+        .price-features li {
+            font-size: 13px;
+            color: var(--text-secondary);
+            padding: 6px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .price-features li::before {
+            content: '✓';
+            color: var(--accent);
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        /* ===== PRIVACY ===== */
+        .privacy-banner {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 24px 120px;
+            text-align: center;
+        }
+
+        .privacy-banner .badge-row {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 24px;
+        }
+
+        .privacy-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--bg-card);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 10px;
+            padding: 8px 16px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* ===== CTA ===== */
+        .cta-section {
+            padding: 80px 24px 120px;
+            text-align: center;
+        }
+
+        .cta-section h2 {
+            font-family: 'Fraunces', serif;
+            font-size: clamp(32px, 5vw, 52px);
+            font-weight: 300;
+            letter-spacing: -1.5px;
+            margin-bottom: 16px;
+            line-height: 1.15;
+        }
+
+        .cta-section p {
+            color: var(--text-secondary);
+            font-size: 16px;
+            margin-bottom: 40px;
+            font-weight: 300;
+        }
+
+        /* ===== FOOTER ===== */
+        footer {
+            border-top: 1px solid rgba(255,255,255,0.04);
+            padding: 40px 24px;
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .footer-left {
+            font-size: 12px;
+            color: var(--text-dim);
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 24px;
+        }
+
+        .footer-links a {
+            font-size: 12px;
+            color: var(--text-dim);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover { color: var(--text-secondary); }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .flow-grid { grid-template-columns: 1fr; }
+            .feature-row { grid-template-columns: 1fr; gap: 32px; }
+            .feature-row:nth-child(even) { direction: ltr; }
+            .pricing-grid { grid-template-columns: 1fr; max-width: 360px; }
+            .hero h1 { letter-spacing: -1px; }
+            section { padding-left: 20px; padding-right: 20px; }
+        }
+
+        @media (max-width: 480px) {
+            .hero-actions { flex-direction: column; width: 100%; }
+            .btn-primary, .btn-secondary { justify-content: center; width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Ambient background -->
+<div class="starfield" id="starfield"></div>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+
+<div class="content">
+
+    <!-- Nav -->
+    <nav>
+        <a href="#" class="nav-logo">drift</a>
+        <div class="nav-links">
+            <a href="index.html" style="opacity:0.5;font-size:12px;">← Hollow Tree EC</a>
+            <a href="#features">Features</a>
+            <a href="#pricing">Pricing</a>
+            <a href="#privacy">Privacy</a>
+            <a href="#download" class="nav-cta">Download</a>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-badge">
+            <span class="dot"></span>
+            Coming soon to the App Store
+        </div>
+        <h1>Sleep better.<br>Wake <em>easier.</em></h1>
+        <p class="hero-sub">The only app that owns your entire night — from the moment you close your eyes to the moment you're fully awake and moving.</p>
+        <div class="hero-actions">
+            <a href="#download" class="btn-primary">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+                Join the Beta
+            </a>
+            <a href="#features" class="btn-secondary">
+                See how it works
+            </a>
+        </div>
+    </section>
+
+    <!-- Sleep-to-Wake Flow -->
+    <section class="flow" id="features">
+        <div class="section-label">The complete sleep cycle</div>
+        <h2 class="section-title">One app. Bedtime to morning.</h2>
+        <div class="flow-grid">
+            <div class="flow-card">
+                <div class="flow-icon" style="background: rgba(108,99,255,0.12);">🌙</div>
+                <h3>Drift off</h3>
+                <p>Layer up to 3 sounds into your perfect sleep environment. Rain over brown noise. Train ride with a thunderstorm. 50+ sounds, mixed your way.</p>
+            </div>
+            <div class="flow-card">
+                <div class="flow-icon" style="background: rgba(125,166,138,0.12);">⏱</div>
+                <h3>Sleep soundly</h3>
+                <p>Set a timer with a natural fade-out. The bedside clock shows your countdown in an ultra-dim display. TV Sleep Mode pauses your streaming when the timer expires.</p>
+            </div>
+            <div class="flow-card">
+                <div class="flow-icon" style="background: rgba(255,107,53,0.12);">💪</div>
+                <h3>Actually wake up</h3>
+                <p>Alarm missions make you prove you're awake. Solve math. Shake your phone. Scan a QR code. Do squats. The alarm won't stop until you do.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="features">
+        <div class="feature-row">
+            <div class="feature-visual">🎵</div>
+            <div class="feature-text">
+                <div class="section-label">Sound Mixer</div>
+                <h3>Your soundscape, layered</h3>
+                <p>Choose from 50+ sounds across five categories — Rain & Water, Nature, Ambient Noise, Cozy, and Therapeutic. Layer up to 3 at once with independent volume controls. Save your favorites as presets. New sounds added monthly.</p>
+                <div class="feature-tags">
+                    <span class="feature-tag">Brown Noise</span>
+                    <span class="feature-tag">Rain</span>
+                    <span class="feature-tag">Binaural Beats</span>
+                    <span class="feature-tag">50+ Sounds</span>
+                </div>
+            </div>
+        </div>
+        <div class="feature-row">
+            <div class="feature-visual">🧮</div>
+            <div class="feature-text">
+                <div class="section-label">Alarm Missions</div>
+                <h3>6 ways to prove you're awake</h3>
+                <p>Math problems at three difficulty levels. Shake your phone. Photograph a registered location. Scan a QR code in your bathroom. Complete squat reps. Type a motivational quote. Enable Shuffle so your brain can't autopilot.</p>
+                <div class="feature-tags">
+                    <span class="feature-tag">Math</span>
+                    <span class="feature-tag">Shake</span>
+                    <span class="feature-tag">Photo Match</span>
+                    <span class="feature-tag">QR Scan</span>
+                    <span class="feature-tag">Squats</span>
+                    <span class="feature-tag">Typing</span>
+                </div>
+            </div>
+        </div>
+        <div class="feature-row">
+            <div class="feature-visual">☀️</div>
+            <div class="feature-text">
+                <div class="section-label">Morning Briefing</div>
+                <h3>Start every morning informed</h3>
+                <p>After your mission, see last night's sleep summary, today's weather, your calendar, reminders, and an AI insight about your sleep patterns. Check in with a mood tracker to connect how you sleep with how you feel.</p>
+                <div class="feature-tags">
+                    <span class="feature-tag">Sleep Summary</span>
+                    <span class="feature-tag">Weather</span>
+                    <span class="feature-tag">Calendar</span>
+                    <span class="feature-tag">AI Insights</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing -->
+    <section class="pricing" id="pricing">
+        <div class="section-label">Simple pricing</div>
+        <h2 class="section-title">Free forever. Premium if you want more.</h2>
+        <div class="pricing-grid">
+            <div class="price-card">
+                <div class="price-tier">Monthly</div>
+                <div class="price-amount">$3.99</div>
+                <div class="price-period">/month</div>
+                <ul class="price-features">
+                    <li>Full sound library</li>
+                    <li>3-layer mixer</li>
+                    <li>All 6 missions</li>
+                    <li>Complete insights</li>
+                    <li>Morning briefing</li>
+                </ul>
+            </div>
+            <div class="price-card featured">
+                <div class="price-tier">Annual</div>
+                <div class="price-amount">$29.99</div>
+                <div class="price-period">/year</div>
+                <div class="price-note">Save 37%</div>
+                <ul class="price-features">
+                    <li>Everything in Premium</li>
+                    <li>Best value</li>
+                    <li>7-day free trial</li>
+                    <li>Cancel anytime</li>
+                </ul>
+            </div>
+            <div class="price-card">
+                <div class="price-tier">Lifetime</div>
+                <div class="price-amount">$79.99</div>
+                <div class="price-period">one time, forever</div>
+                <ul class="price-features">
+                    <li>Everything in Premium</li>
+                    <li>Never pay again</li>
+                    <li>All future updates</li>
+                    <li>Support indie dev</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Privacy -->
+    <section class="privacy-banner" id="privacy">
+        <div class="section-label">Privacy first</div>
+        <h2 class="section-title">Your sleep data stays on your device.</h2>
+        <p style="color: var(--text-secondary); font-size: 15px; line-height: 1.7; font-weight: 300;">
+            All data is processed locally by default. Photos taken for missions are never saved. Health data is never shared. No tracking, no selling your sleep data. Cloud sync is optional and encrypted.
+        </p>
+        <div class="badge-row">
+            <div class="privacy-badge">🔒 On-device first</div>
+            <div class="privacy-badge">🚫 No data selling</div>
+            <div class="privacy-badge">🛡 GDPR compliant</div>
+            <div class="privacy-badge">💚 No tracking</div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta-section" id="download">
+        <h2>Ready to sleep better<br>and wake easier?</h2>
+        <p>Join the beta and be among the first to try Drift.</p>
+        <a href="/cdn-cgi/l/email-protection#93c0c6c3c3dcc1c7ccd6ded2dadfccdbd6c1d6ace0e6f1f9f6f0e7aed7e1faf5e7b3d1f6e7f2b3dafde7f6e1f6e0e7b5f1fcf7eaaedab4f7b3fffaf8f6b3e7fcb3f9fcfafdb3e7fbf6b3d7e1faf5e7b3f1f6e7f2b2" class="btn-primary" style="font-size: 17px; padding: 16px 40px;">
+            Join the Beta →
+        </a>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-left">
+            &copy; 2026 Hollow Tree EC, LLC. All rights reserved.
+        </div>
+        <div class="footer-links">
+            <a href="privacy-policy.html">Privacy Policy</a>
+            <a href="terms-of-service.html">Terms of Service</a>
+            <a href="/cdn-cgi/l/email-protection#9ecdcbceced1cccac1dbd3dfd7d2c1d6dbccdb">Contact</a>
+        </div>
+    </footer>
+
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+    // Generate starfield
+    const sf = document.getElementById('starfield');
+    for (let i = 0; i < 80; i++) {
+        const s = document.createElement('div');
+        s.className = 'star';
+        const size = Math.random() * 2 + 0.5;
+        s.style.cssText = `
+            width:${size}px;height:${size}px;
+            left:${Math.random()*100}%;top:${Math.random()*100}%;
+            --dur:${Math.random()*4+2}s;
+            --min-o:${Math.random()*0.2};
+            --max-o:${Math.random()*0.5+0.3};
+            animation-delay:${Math.random()*5}s;
+        `;
+        sf.appendChild(s);
+    }
+
+    // Smooth reveal on scroll
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+            if (e.isIntersecting) {
+                e.target.style.opacity = '1';
+                e.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.flow-card, .feature-row, .price-card, .p
