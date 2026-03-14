@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hollow Tree EC, LLC</title>
+    <meta name="description" content="Hollow Tree EC, LLC — Building digital products that help people sleep better, live smarter, and start their mornings right.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --cream: #FFF8F0;
+            --cream-mid: #F5EDE0;
+            --bronze: #CEB789;
+            --bronze-dark: #A8935E;
+            --bronze-light: #E0D0A8;
+            --green: #2D5523;
+            --green-light: #3A6E2C;
+            --green-dim: rgba(45,85,35,0.08);
+            --black: #1A1A1A;
+            --black-deep: #0D0D0D;
+            --text-body: #4A4A4A;
+            --text-light: #8A8070;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--cream);
+            color: var(--black);
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+
+        /* ===== NAV ===== */
+        nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 100;
+            background: rgba(255,248,240,0.92);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(206,183,137,0.2);
+            padding: 0 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 72px;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            text-decoration: none;
+            color: var(--black);
+        }
+
+        .nav-brand img {
+            height: 40px;
+            width: auto;
+        }
+
+        .nav-brand span {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 20px;
+            font-weight: 500;
+            letter-spacing: -0.3px;
+            color: var(--green);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-link {
+            font-size: 13px;
+            font-weight: 400;
+            color: var(--text-body);
+            text-decoration: none;
+            padding: 8px 18px;
+            border-radius: 8px;
+            transition: background 0.25s, color 0.25s;
+            letter-spacing: 0.2px;
+            position: relative;
+        }
+
+        .nav-link:hover {
+            background: var(--green-dim);
+            color: var(--green);
+        }
+
+        .nav-link.active {
+            color: var(--green);
+            font-weight: 500;
+        }
+
+        /* Dropdown */
+        .dropdown { position: relative; }
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%) translateY(8px);
+            background: white;
+            border: 1px solid rgba(206,183,137,0.25);
+            border-radius: 12px;
+            padding: 8px;
+            min-width: 200px;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.08);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.25s, visibility 0.25s, transform 0.25s;
+            transform: translateX(-50%) translateY(16px);
+        }
+
+        .dropdown:hover .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(8px);
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 14px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--black);
+            font-size: 13px;
+            transition: background 0.2s;
+        }
+
+        .dropdown-item:hover { background: var(--green-dim); }
+
+        .dropdown-icon {
+            width: 32px; height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            background: linear-gradient(135deg, #0B1026, #2D1B4E);
+        }
+
+        .dropdown-text strong { display: block; font-weight: 500; }
+        .dropdown-text span { font-size: 11px; color: var(--text-light); }
+
+        .dropdown-item.coming-soon {
+            opacity: 0.45;
+            pointer-events: none;
+        }
+
+        .nav-arrow {
+            display: inline-block;
+            font-size: 9px;
+            margin-left: 3px;
+            transition: transform 0.2s;
+        }
+
+        .dropdown:hover .nav-arrow { transform: rotate(180deg); }
+
+        /* Mobile menu */
+        .mobile-toggle {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+        }
+
+        .mobile-toggle span {
+            display: block;
+            width: 20px;
+            height: 2px;
+            background: var(--black);
+            margin: 4px 0;
+            border-radius: 2px;
+            transition: transform 0.3s;
+        }
+
+        /* ===== HERO ===== */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 120px 24px 80px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -300px;
+            right: -200px;
+            width: 700px;
+            height: 700px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(206,183,137,0.12), transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: -200px;
+            left: -200px;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(45,85,35,0.06), transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero-content { position: relative; z-index: 1; max-width: 720px; }
+
+        .hero-logo {
+            width: 120px;
+            height: auto;
+            margin-bottom: 32px;
+            opacity: 0;
+            animation: fadeUp 0.8s ease-out 0.1s both;
+        }
+
+        .hero h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(36px, 5.5vw, 64px);
+            font-weight: 300;
+            line-height: 1.15;
+            letter-spacing: -1.5px;
+            color: var(--black-deep);
+            margin-bottom: 20px;
+            opacity: 0;
+            animation: fadeUp 0.8s ease-out 0.2s both;
+        }
+
+        .hero h1 em {
+            font-style: italic;
+            color: var(--green);
+        }
+
+        .hero-sub {
+            font-size: clamp(15px, 1.8vw, 18px);
+            color: var(--text-body);
+            line-height: 1.75;
+            font-weight: 300;
+            max-width: 520px;
+            margin: 0 auto 40px;
+            opacity: 0;
+            animation: fadeUp 0.8s ease-out 0.3s both;
+        }
+
+        .hero-divider {
+            width: 48px;
+            height: 1px;
+            background: var(--bronze);
+            margin: 0 auto 40px;
+            opacity: 0;
+            animation: fadeUp 0.8s ease-out 0.35s both;
+        }
+
+        .hero-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--green);
+            color: white;
+            padding: 14px 32px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            letter-spacing: 0.3px;
+            transition: transform 0.2s, box-shadow 0.3s, background 0.3s;
+            opacity: 0;
+            animation: fadeUp 0.8s ease-out 0.4s both;
+        }
+
+        .hero-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 28px rgba(45,85,35,0.2);
+            background: var(--green-light);
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(24px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== PROJECTS SECTION ===== */
+        .projects {
+            padding: 100px 24px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .section-label {
+            font-size: 11px;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            color: var(--bronze-dark);
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .section-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(28px, 4vw, 42px);
+            font-weight: 300;
+            letter-spacing: -1px;
+            text-align: center;
+            margin-bottom: 56px;
+            line-height: 1.2;
+            color: var(--black-deep);
+        }
+
+        .project-card {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+            background: white;
+            border: 1px solid rgba(206,183,137,0.2);
+            border-radius: 24px;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .project-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 16px 48px rgba(0,0,0,0.06);
+        }
+
+        .project-visual {
+            background: linear-gradient(135deg, #0B1026, #1A1B3A, #2D1B4E);
+            padding: 48px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            min-height: 320px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .project-visual::before {
+            content: '';
+            position: absolute;
+            top: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(108,99,255,0.15), transparent 70%);
+        }
+
+        .project-visual .app-name {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 36px;
+            font-weight: 300;
+            color: #F0ECF8;
+            letter-spacing: -1px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .project-visual .app-tagline {
+            font-size: 13px;
+            color: #8B85A0;
+            margin-top: 8px;
+            font-weight: 300;
+            position: relative;
+            z-index: 1;
+        }
+
+        .project-visual .stars {
+            position: absolute;
+            inset: 0;
+        }
+
+        .project-visual .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            opacity: 0.3;
+        }
+
+        .project-info {
+            padding: 40px 36px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .project-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--green-dim);
+            color: var(--green);
+            font-size: 11px;
+            font-weight: 500;
+            padding: 4px 12px;
+            border-radius: 6px;
+            letter-spacing: 0.5px;
+            margin-bottom: 16px;
+            width: fit-content;
+        }
+
+        .project-badge .dot {
+            width: 5px; height: 5px;
+            background: var(--green);
+            border-radius: 50%;
+        }
+
+        .project-info h3 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 28px;
+            font-weight: 400;
+            letter-spacing: -0.5px;
+            margin-bottom: 12px;
+            color: var(--black-deep);
+        }
+
+        .project-info p {
+            font-size: 14px;
+            color: var(--text-body);
+            line-height: 1.7;
+            font-weight: 300;
+            margin-bottom: 24px;
+        }
+
+        .project-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--green);
+            text-decoration: none;
+            transition: gap 0.25s;
+        }
+
+        .project-link:hover { gap: 12px; }
+
+        .more-coming {
+            text-align: center;
+            margin-top: 48px;
+            font-size: 14px;
+            color: var(--text-light);
+            font-weight: 300;
+            font-style: italic;
+        }
+
+        /* ===== ABOUT ===== */
+        .about {
+            padding: 100px 24px;
+            max-width: 680px;
+            margin: 0 auto;
+        }
+
+        .about-content {
+            text-align: center;
+        }
+
+        .about-content p {
+            font-size: 16px;
+            color: var(--text-body);
+            line-height: 1.8;
+            font-weight: 300;
+            margin-bottom: 20px;
+        }
+
+        .about-values {
+            display: flex;
+            justify-content: center;
+            gap: 32px;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+
+        .value-item {
+            text-align: center;
+        }
+
+        .value-icon {
+            width: 48px; height: 48px;
+            border-radius: 14px;
+            background: var(--green-dim);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin: 0 auto 12px;
+        }
+
+        .value-item h4 {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--black);
+            margin-bottom: 4px;
+        }
+
+        .value-item p {
+            font-size: 12px;
+            color: var(--text-light);
+            font-weight: 300;
+            margin: 0;
+        }
+
+        /* ===== FOOTER ===== */
+        footer {
+            border-top: 1px solid rgba(206,183,137,0.15);
+            padding: 32px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        .footer-left img { height: 20px; opacity: 0.5; }
+
+        .footer-links {
+            display: flex;
+            gap: 24px;
+        }
+
+        .footer-links a {
+            font-size: 12px;
+            color: var(--text-light);
+            text-decoration: none;
+            transition: color 0.25s;
+        }
+
+        .footer-links a:hover { color: var(--green); }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            nav { padding: 0 20px; }
+            .nav-links { display: none; }
+            .mobile-toggle { display: block; }
+            .project-card { grid-template-columns: 1fr; }
+            .project-visual { min-height: 220px; }
+            .about-values { gap: 20px; }
+            footer { padding: 24px 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Nav -->
+    <nav>
+        <a href="#" class="nav-brand">
+            <img src="HTH_Logo_Green.png" alt="Hollow Tree EC">
+            <span>Hollow Tree EC</span>
+        </a>
+        <div class="nav-links">
+            <a href="#home" class="nav-link active">Home</a>
+            <div class="dropdown">
+                <a href="#projects" class="nav-link">Projects <span class="nav-arrow">▾</span></a>
+                <div class="dropdown-menu">
+                    <a href="drift.html" class="dropdown-item">
+                        <div class="dropdown-icon">🌙</div>
+                        <div class="dropdown-text">
+                            <strong>Drift</strong>
+                            <span>Sleep sounds & alarm app</span>
+                        </div>
+                    </a>
+                    <a href="https://hollowtreeec.etsy.com" target="_blank" rel="noopener" class="dropdown-item">
+                        <div class="dropdown-icon" style="background: linear-gradient(135deg, #2D5523, #3A6E2C);">🌿</div>
+                        <div class="dropdown-text">
+                            <strong>Hollow Tree Shop</strong>
+                            <span>Print on demand &middot; Etsy</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            <a href="#about" class="nav-link">About</a>
+        </div>
+        <button class="mobile-toggle" onclick="document.querySelector('.nav-links').classList.toggle('show')">
+            <span></span><span></span><span></span>
+        </button>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <img src="HTH_Logo_Bronze.png" alt="Hollow Tree EC" class="hero-logo">
+            <h1>Building products that<br>help people <em>thrive</em></h1>
+            <p class="hero-sub">Hollow Tree EC is a small, independent studio crafting digital products and original designs — from apps that improve your daily routine to curated goods made to order.</p>
+            <div class="hero-divider"></div>
+            <a href="#projects" class="hero-cta">See our projects →</a>
+        </div>
+    </section>
+
+    <!-- Projects -->
+    <section class="projects" id="projects">
+        <div class="section-label">Our Work</div>
+        <h2 class="section-title">What we're working on</h2>
+
+        <a href="drift.html" class="project-card">
+            <div class="project-visual">
+                <div class="stars" id="project-stars"></div>
+                <div class="app-name">drift</div>
+                <div class="app-tagline">Sleep better. Wake easier.</div>
+            </div>
+            <div class="project-info">
+                <div class="project-badge"><span class="dot"></span> In Development</div>
+                <h3>Drift — Sleep & Alarm</h3>
+                <p>The only app that owns your entire night. Layer sleep sounds, wake with missions that prove you're awake, and start every morning with a personalized briefing.</p>
+                <span class="project-link">Learn more →</span>
+            </div>
+        </a>
+
+        <a href="https://hollowtreeec.etsy.com" target="_blank" rel="noopener" class="project-card" style="margin-top: 32px;">
+            <div class="project-visual" style="background: linear-gradient(135deg, #1A1208, #2A2010, #1A1208);">
+                <div class="app-name" style="color: var(--bronze-light);">🌿</div>
+                <div class="app-name" style="font-size: 28px; color: var(--bronze-light); margin-top: 8px;">Hollow Tree Shop</div>
+                <div class="app-tagline" style="color: #8A7A60;">Original designs, made to order</div>
+            </div>
+            <div class="project-info">
+                <div class="project-badge" style="background: rgba(206,183,137,0.1); color: var(--bronze-dark);"><span class="dot" style="background: var(--bronze-dark);"></span> Live on Etsy</div>
+                <h3>Print on Demand</h3>
+                <p>Curated, original designs on apparel, home goods, and accessories — produced on demand and shipped directly to you. Quality materials, no inventory waste.</p>
+                <span class="project-link">Visit the shop →</span>
+            </div>
+        </a>
+
+        <p class="more-coming">More on the way. We're just getting started.</p>
+    </section>
+
+    <!-- About -->
+    <section class="about" id="about">
+        <div class="section-label">About Us</div>
+        <h2 class="section-title">Small studio, big ambitions</h2>
+        <div class="about-content">
+            <p>Hollow Tree EC, LLC is an independent product studio based in the United States. We design, build, and ship digital products and original goods — from mobile apps focused on wellness and productivity to curated print-on-demand designs.</p>
+            <p>We believe the best products are the ones that respect your time, your privacy, and your intelligence. Every product we build starts with a real problem and a commitment to solving it thoughtfully.</p>
+            <div class="about-values">
+                <div class="value-item">
+                    <div class="value-icon">🔒</div>
+                    <h4>Privacy First</h4>
+                    <p>Your data, your device</p>
+                </div>
+                <div class="value-item">
+                    <div class="value-icon">🎯</div>
+                    <h4>Purpose Built</h4>
+                    <p>Solve real problems</p>
+                </div>
+                <div class="value-item">
+                    <div class="value-icon">✨</div>
+                    <h4>Craft Matters</h4>
+                    <p>Every detail counts</p>
+                </div>
+                <div class="value-item">
+                    <div class="value-icon">🌱</div>
+                    <h4>Indie Spirit</h4>
+                    <p>No VC, no compromises</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-left">
+            <img src="HTH_Logo_Green.png" alt="">
+            &copy; 2026 Hollow Tree EC, LLC. All rights reserved.
+        </div>
+        <div class="footer-links">
+            <a href="privacy-policy.html">Privacy Policy</a>
+            <a href="terms-of-service.html">Terms of Service</a>
+            <a href="mailto:admin@hollowtree-ec.com">Contact</a>
+        </div>
+    </footer>
+
+    <script>
+        // Add stars to project visual
+        const starsEl = document.getElementById('project-stars');
+        if (starsEl) {
+            for (let i = 0; i < 30; i++) {
+                const s = document.createElement('div');
+                s.className = 'star';
+                s.style.left = Math.random() * 100 + '%';
+                s.style.top = Math.random() * 100 + '%';
+                s.style.opacity = Math.random() * 0.4 + 0.1;
+                s.style.width = s.style.height = (Math.random() * 2 + 0.5) + 'px';
+                starsEl.appendChild(s);
+            }
+        }
+
+        // Scroll reveal
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(e => {
+                if (e.isIntersecting) {
+                    e.target.style.opacity = '1';
+                    e.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.project-card, .about-content, .value-item').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(24px)';
+            el.style.transition = 'opacity 0.6s ease-out, transform 0.6s ease-out';
+            observer.observe(el);
+        });
+
+        // Smooth scroll for nav links
+        document.querySelectorAll('a[href^="#"]').forEach(a => {
+            a.addEventListener('click', e => {
+                e.preventDefault();
+                const target = document.querySelector(a.getAttribute('href'));
+                if (target) target.scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+    </script>
+</body>
+</html>
